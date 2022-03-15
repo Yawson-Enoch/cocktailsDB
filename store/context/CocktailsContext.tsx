@@ -70,36 +70,34 @@ const CocktailsContextProvider: FC = ({ children }) => {
     try {
       setLoadingCocktails(true);
       const response = await fetch(`${url}${searchTerm}`);
-      if (response.ok) {
-        const cocktails = await response.json();
-        const { drinks } = cocktails;
-        if (drinks) {
-          const availableDrinks: ICocktailProps[] = drinks?.map(
-            (drink: any) => {
-              const {
-                idDrink: id,
-                strDrink: cocktailName,
-                strDrinkThumb: image,
-                strAlcoholic: info,
-                strGlass: glass,
-              } = drink;
 
-              return {
-                id,
-                cocktailName,
-                image,
-                info,
-                glass,
-              } as ICocktailProps;
-            }
-          );
-          setCocktails(availableDrinks);
-        } else {
-          setCocktails([]);
-        }
-      } else {
+      if (!response.ok) {
         throw new Error(`Something went wrong ${response.status}`);
       }
+
+      const cocktails = await response.json();
+      const { drinks } = cocktails;
+      if (!drinks) {
+        setCocktails([]);
+      }
+      const availableDrinks: ICocktailProps[] = drinks?.map((drink: any) => {
+        const {
+          idDrink: id,
+          strDrink: cocktailName,
+          strDrinkThumb: image,
+          strAlcoholic: info,
+          strGlass: glass,
+        } = drink;
+
+        return {
+          id,
+          cocktailName,
+          image,
+          info,
+          glass,
+        } as ICocktailProps;
+      });
+      setCocktails(availableDrinks);
       setLoadingCocktails(false);
     } catch (error: any) {
       setLoadingCocktails(false);
@@ -119,47 +117,48 @@ const CocktailsContextProvider: FC = ({ children }) => {
         const response = await fetch(
           `https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${id}`
         );
-        if (response.ok) {
-          const data = await response.json();
-
-          if (data?.drinks) {
-            const {
-              strDrink: cocktailName,
-              strDrinkThumb: image,
-              strAlcoholic: info,
-              strCategory: category,
-              strGlass: glass,
-              strInstructions: instructions,
-              strIngredient1: ingredient1,
-              strIngredient2: ingredient2,
-              strIngredient3: ingredient3,
-              strIngredient4: ingredient4,
-              strIngredient5: ingredient5,
-            } = data.drinks[0];
-            const ingredients = [
-              ingredient1,
-              ingredient2,
-              ingredient3,
-              ingredient4,
-              ingredient5,
-            ];
-
-            const newDrinks = {
-              cocktailName,
-              image,
-              info,
-              category,
-              glass,
-              instructions,
-              ingredients,
-            } as ICocktailDetailsProps;
-            setCocktailDetails(newDrinks);
-          } else {
-            setCocktailDetails({} as ICocktailDetailsProps);
-          }
-        } else {
+        if (!response.ok) {
           throw new Error(`Something went wrong ${response.status}`);
         }
+
+        const data = await response.json();
+
+        if (!data?.drinks) {
+          setCocktailDetails({} as ICocktailDetailsProps);
+        }
+
+        const {
+          strDrink: cocktailName,
+          strDrinkThumb: image,
+          strAlcoholic: info,
+          strCategory: category,
+          strGlass: glass,
+          strInstructions: instructions,
+          strIngredient1: ingredient1,
+          strIngredient2: ingredient2,
+          strIngredient3: ingredient3,
+          strIngredient4: ingredient4,
+          strIngredient5: ingredient5,
+        } = data.drinks[0];
+        const ingredients = [
+          ingredient1,
+          ingredient2,
+          ingredient3,
+          ingredient4,
+          ingredient5,
+        ];
+
+        const newDrinks = {
+          cocktailName,
+          image,
+          info,
+          category,
+          glass,
+          instructions,
+          ingredients,
+        } as ICocktailDetailsProps;
+        setCocktailDetails(newDrinks);
+
         setLoadingCocktailDetails(false);
       } catch (error: any) {
         return;

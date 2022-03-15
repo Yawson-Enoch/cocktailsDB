@@ -15,7 +15,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name='theme-color' content='#000000' />
         <title>Cocktails</title>
         <link rel='shortcut icon' href='./favicon.ico' type='image/x-icon' />
-        <link rel='stylesheet' href='./font.css' />
+        {/* <link rel='stylesheet' href='./font.css' /> */}
       </Head>
       <Layout>
         <Component {...pageProps} />
