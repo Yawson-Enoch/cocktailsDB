@@ -98,11 +98,11 @@ const CocktailsContextProvider: FC = ({ children }) => {
         } as ICocktailProps;
       });
       setCocktails(availableDrinks);
-      setLoadingCocktails(false);
     } catch (error: any) {
-      setLoadingCocktails(false);
       setCocktailsFetchError(true);
       setCocktailsFetchErrorMessage(error.message);
+    } finally {
+      setLoadingCocktails(false);
     }
   }, [searchTerm]);
 
@@ -158,10 +158,10 @@ const CocktailsContextProvider: FC = ({ children }) => {
           ingredients,
         } as ICocktailDetailsProps;
         setCocktailDetails(newDrinks);
-
-        setLoadingCocktailDetails(false);
       } catch (error: any) {
-        return;
+        console.log(error.message);
+      } finally {
+        setLoadingCocktailDetails(false);
       }
     };
     fetchCocktailDetails();
