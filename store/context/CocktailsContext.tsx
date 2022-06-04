@@ -1,12 +1,5 @@
 import { useRouter } from 'next/router';
-import {
-  createContext,
-  FC,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { createContext, FC, useContext, useEffect, useState } from 'react';
 
 const url = 'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=';
 
@@ -66,49 +59,51 @@ const CocktailsContextProvider: FC = ({ children }) => {
     {} as ICocktailDetailsProps
   );
 
-  const fetchCocktails = useCallback(async () => {
-    try {
-      setLoadingCocktails(true);
-      const response = await fetch(`${url}${searchTerm}`);
-
-      if (!response.ok) {
-        throw new Error(`Something went wrong ${response.status}`);
-      }
-
-      const cocktails = await response.json();
-      const { drinks } = cocktails;
-      if (!drinks) {
-        setCocktails([]);
-      }
-      const availableDrinks: ICocktailProps[] = drinks?.map((drink: any) => {
-        const {
-          idDrink: id,
-          strDrink: cocktailName,
-          strDrinkThumb: image,
-          strAlcoholic: info,
-          strGlass: glass,
-        } = drink;
-
-        return {
-          id,
-          cocktailName,
-          image,
-          info,
-          glass,
-        } as ICocktailProps;
-      });
-      setCocktails(availableDrinks);
-    } catch (error: any) {
-      setCocktailsFetchError(true);
-      setCocktailsFetchErrorMessage(error.message);
-    } finally {
-      setLoadingCocktails(false);
-    }
-  }, [searchTerm]);
-
   useEffect(() => {
+    const fetchCocktails = async () => {
+      try {
+        setLoadingCocktails(true);
+        const response = await fetch(`${url}${searchTerm}`);
+
+        if (!response.ok) {
+          setCocktailsFetchError(true);
+          setCocktailsFetchErrorMessage(
+            `Something went wrong ${response.status}`
+          );
+          throw new Error(`Something went wrong ${response.status}`);
+        }
+
+        const { drinks } = await response.json();
+        if (!drinks) {
+          setCocktails([]);
+        }
+        const availableDrinks: ICocktailProps[] = drinks?.map((drink: any) => {
+          const {
+            idDrink: id,
+            strDrink: cocktailName,
+            strDrinkThumb: image,
+            strAlcoholic: info,
+            strGlass: glass,
+          } = drink;
+
+          return {
+            id,
+            cocktailName,
+            image,
+            info,
+            glass,
+          } as ICocktailProps;
+        });
+        setCocktails(availableDrinks);
+      } catch (error: any) {
+        setCocktailsFetchError(true);
+        setCocktailsFetchErrorMessage(error.message);
+      } finally {
+        setLoadingCocktails(false);
+      }
+    };
     fetchCocktails();
-  }, [searchTerm, fetchCocktails]);
+  }, [searchTerm]);
 
   useEffect(() => {
     const fetchCocktailDetails = async () => {

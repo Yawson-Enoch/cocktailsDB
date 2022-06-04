@@ -21,7 +21,7 @@ const CocktailsShowcase = () => {
     );
   }
 
-  if (cocktails.length <= 0) {
+  if (!cocktails || cocktails.length === 0) {
     return (
       <h2 style={{ textAlign: 'center' }}>
         no cocktails matched your search criteria
